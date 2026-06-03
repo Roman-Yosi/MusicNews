@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "title": "Contoh Berita Musik 1",
+    "desc": "Ini berita musik terbaru MusicNewsID.",
+    "content": "Isi lengkap artikel musik di sini...",
+    "date": "2026-06-03"
+  },
+  {
+    "id": 2,
+    "title": "Trending Musik Indonesia",
+    "desc": "Update musik terbaru hari ini.",
+    "content": "Artikel lengkap trending musik...",
+    "date": "2026-06-03"
+  }
+]
