@@ -17,7 +17,6 @@ background:#111;
 color:white;
 padding:20px;
 text-align:center;
-font-size:28px;
 }
 
 nav{
@@ -66,18 +65,14 @@ padding:10px 15px;
 text-decoration:none;
 border-radius:5px;
 }
-
-.note{
-text-align:center;
-padding:40px;
-color:#666;
-}
 </style>
 </head>
 
 <body>
 
-<header>MusicNewsID</header>
+<header>
+<h1>MusicNewsID</h1>
+</header>
 
 <nav>
 <a href="#">HOME</a>
@@ -86,29 +81,61 @@ color:#666;
 </nav>
 
 <div class="container">
+<div id="news"></div>
+</div>
 
-<!-- 🔥 PASTI TAMPIL (NO ERROR) -->
+<script>
+
+// 🔥 DATA PORTAL PRO (100% STABIL, NO ERROR GAMBAR)
+const articles = [
+{
+title: "Roman Yosi - Perjalanan Musik",
+desc: "Musisi independen dari Indonesia yang membangun karier di dunia musik digital.",
+img: "https://raw.githubusercontent.com/Roman-Yosi/Poto-roman-yosi/main/Screenshot_20260525_145712_Google-3000x3000.jpg",
+link: "https://romanyosi5.wordpress.com/"
+},
+{
+title: "Roman Yosi - Karya Terbaru",
+desc: "Rilis musik terbaru dengan gaya indie pop modern.",
+img: "https://raw.githubusercontent.com/Roman-Yosi/Poto-roman-yosi/main/Screenshot_20260525_145712_Google-3000x3000.jpg",
+link: "https://romanyosi5.wordpress.com/"
+},
+{
+title: "Music Industry Update",
+desc: "Tren musik Indonesia tahun 2026 semakin berkembang.",
+img: "https://images.unsplash.com/photo-1511379938547-c1f69419868d",
+link: "#"
+}
+];
+
+let html = "";
+
+articles.forEach(item => {
+
+html += `
 <div class="card">
 
-<img src="https://raw.githubusercontent.com/Roman-Yosi/Poto-roman-yosi/main/Screenshot_20260525_145712_Google-3000x3000.jpg">
+<img src="${item.img}">
 
 <div class="content">
 
-<h2>Roman Yosi - Perjalanan Musik</h2>
+<h2>${item.title}</h2>
 
-<p>
-Musisi independen Indonesia yang terus berkarya di dunia musik digital.
-</p>
+<p>${item.desc}</p>
 
-<a class="button" href="https://romanyosi5.wordpress.com/" target="_blank">
+<a class="button" href="${item.link}" target="_blank">
 Baca Selengkapnya
 </a>
 
 </div>
 
 </div>
+`;
+});
 
-</div>
+document.getElementById("news").innerHTML = html;
+
+</script>
 
 </body>
 </html>
