@@ -17,6 +17,8 @@ background:#111;
 color:white;
 padding:20px;
 text-align:center;
+font-size:28px;
+font-weight:bold;
 }
 
 nav{
@@ -33,7 +35,7 @@ font-weight:bold;
 }
 
 .container{
-max-width:1100px;
+max-width:1000px;
 margin:auto;
 padding:20px;
 }
@@ -48,7 +50,7 @@ margin-bottom:20px;
 
 .card img{
 width:100%;
-height:230px;
+height:220px;
 object-fit:cover;
 }
 
@@ -71,7 +73,7 @@ border-radius:5px;
 <body>
 
 <header>
-<h1>MusicNewsID</h1>
+MusicNewsID
 </header>
 
 <nav>
@@ -81,61 +83,30 @@ border-radius:5px;
 </nav>
 
 <div class="container">
-<div id="news"></div>
-</div>
 
-<script>
-
-// 🔥 DATA PORTAL PRO (100% STABIL, NO ERROR GAMBAR)
-const articles = [
-{
-title: "Roman Yosi - Perjalanan Musik",
-desc: "Musisi independen dari Indonesia yang membangun karier di dunia musik digital.",
-img: "https://raw.githubusercontent.com/Roman-Yosi/Poto-roman-yosi/main/Screenshot_20260525_145712_Google-3000x3000.jpg",
-link: "https://romanyosi5.wordpress.com/"
-},
-{
-title: "Roman Yosi - Karya Terbaru",
-desc: "Rilis musik terbaru dengan gaya indie pop modern.",
-img: "https://raw.githubusercontent.com/Roman-Yosi/Poto-roman-yosi/main/Screenshot_20260525_145712_Google-3000x3000.jpg",
-link: "https://romanyosi5.wordpress.com/"
-},
-{
-title: "Music Industry Update",
-desc: "Tren musik Indonesia tahun 2026 semakin berkembang.",
-img: "https://images.unsplash.com/photo-1511379938547-c1f69419868d",
-link: "#"
-}
-];
-
-let html = "";
-
-articles.forEach(item => {
-
-html += `
+<!-- ARTIKEL 1 -->
 <div class="card">
-
-<img src="${item.img}">
+<img src="https://raw.githubusercontent.com/Roman-Yosi/Poto-roman-yosi/main/Screenshot_20260525_145712_Google-3000x3000.jpg">
 
 <div class="content">
+<h2>Roman Yosi - Perjalanan Musik</h2>
+<p>Musisi independen Indonesia yang terus berkarya di dunia musik digital.</p>
+<a class="button" href="https://romanyosi5.wordpress.com/" target="_blank">Baca Selengkapnya</a>
+</div>
+</div>
 
-<h2>${item.title}</h2>
+<!-- ARTIKEL 2 -->
+<div class="card">
+<img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d">
 
-<p>${item.desc}</p>
-
-<a class="button" href="${item.link}" target="_blank">
-Baca Selengkapnya
-</a>
-
+<div class="content">
+<h2>Industri Musik 2026</h2>
+<p>Tren musik Indonesia terus berkembang dengan cepat di era digital.</p>
+<a class="button" href="#" target="_blank">Baca Selengkapnya</a>
+</div>
 </div>
 
 </div>
-`;
-});
-
-document.getElementById("news").innerHTML = html;
-
-</script>
 
 </body>
 </html>
