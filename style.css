@@ -9,8 +9,8 @@ header {
   background: #111;
   padding: 15px;
   text-align: center;
-  font-weight: bold;
   color: #ff2d55;
+  font-weight: bold;
 }
 
 .hero {
@@ -29,6 +29,10 @@ header {
   margin-bottom: 10px;
   border-radius: 8px;
   border: 1px solid #222;
+}
+
+.card h3 {
+  margin: 0 0 8px 0;
 }
 
 .card a {
