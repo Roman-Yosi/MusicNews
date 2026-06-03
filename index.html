@@ -25,15 +25,20 @@
 
 <script>
 
-// ✅ WORDPRESS REST API (INI RSS BARU YANG BENAR)
+// 🔥 API WORDPRESS (lebih stabil tanpa _embed)
 const apiURL =
-"https://romanyosi5.wordpress.com/wp-json/wp/v2/posts?per_page=10&_embed";
+"https://romanyosi5.wordpress.com/wp-json/wp/v2/posts?per_page=10";
 
 let postsData = [];
 
-// FETCH DATA
+// ================= FETCH DATA =================
 fetch(apiURL)
-.then(res => res.json())
+.then(res => {
+  if(!res.ok){
+    throw new Error("API error");
+  }
+  return res.json();
+})
 .then(data => {
 
   postsData = data;
@@ -42,23 +47,34 @@ fetch(apiURL)
 
   data.forEach((post, i) => {
 
-    // AMBIL GAMBAR FEATURED IMAGE
-    let img = "";
+    // ✔ gambar aman (fallback jika tidak ada featured image)
+    let img = "https://via.placeholder.com/600x400";
 
-    if(post._embedded &&
-       post._embedded["wp:featuredmedia"]){
-      img = post._embedded["wp:featuredmedia"][0].source_url;
+    // WordPress kadang tidak kirim featured image langsung
+    if(post.featured_media_url){
+      img = post.featured_media_url;
     }
 
-    // AMBIL TEKS RINGKAS
-    let excerpt = post.excerpt.rendered
-      .replace(/<[^>]*>/g, "");
+    // fallback extract image dari content (opsional)
+    let contentHTML = post.content?.rendered || "";
+    let tempDiv = document.createElement("div");
+    tempDiv.innerHTML = contentHTML;
+    let firstImg = tempDiv.querySelector("img");
+
+    if(firstImg){
+      img = firstImg.src;
+    }
+
+    // ✔ excerpt aman
+    let excerpt = post.excerpt?.rendered
+      ? post.excerpt.rendered.replace(/<[^>]*>/g, "")
+      : "Tidak ada ringkasan";
 
     html += `
       <div class="card" onclick="openPost(${i})">
-        <img class="thumb" src="${img || 'https://via.placeholder.com/600x400'}">
+        <img class="thumb" src="${img}">
         <div class="content">
-          <h3>${post.title.rendered}</h3>
+          <h3>${post.title?.rendered || "Tanpa Judul"}</h3>
           <div class="excerpt">${excerpt.slice(0,120)}...</div>
         </div>
       </div>
@@ -69,33 +85,55 @@ fetch(apiURL)
 
 })
 .catch(err => {
-  document.getElementById("news").innerHTML =
-  "❌ Gagal load artikel. Cek WordPress API.";
+
   console.log(err);
+
+  document.getElementById("news").innerHTML = `
+    <div style="padding:20px;color:red;text-align:center">
+      ❌ Gagal load artikel dari WordPress<br>
+      Coba refresh atau cek koneksi API
+    </div>
+  `;
 });
 
 
-// 🔥 OPEN FULL ARTIKEL
+// ================= OPEN FULL POST =================
 function openPost(i){
+
   let post = postsData[i];
 
-  let img = "";
+  let content = post.content?.rendered || "Konten tidak tersedia";
 
-  if(post._embedded &&
-     post._embedded["wp:featuredmedia"]){
-    img = post._embedded["wp:featuredmedia"][0].source_url;
+  // fallback gambar
+  let img = "https://via.placeholder.com/600x400";
+
+  let tempDiv = document.createElement("div");
+  tempDiv.innerHTML = content;
+
+  let firstImg = tempDiv.querySelector("img");
+
+  if(firstImg){
+    img = firstImg.src;
   }
 
   document.getElementById("modal-body").innerHTML = `
-    <h2>${post.title.rendered}</h2>
-    <p style="color:gray">${post.date}</p>
-    <img src="${img}">
-    <div>${post.content.rendered}</div>
+    <h2>${post.title?.rendered || ""}</h2>
+    <p style="color:gray">
+      ${new Date(post.date).toLocaleString()}
+    </p>
+
+    <img src="${img}" style="width:100%;border-radius:10px;margin:10px 0">
+
+    <div style="line-height:1.8">
+      ${content}
+    </div>
   `;
 
   document.getElementById("modal").style.display = "block";
 }
 
+
+// ================= CLOSE MODAL =================
 function closeModal(){
   document.getElementById("modal").style.display = "none";
 }
