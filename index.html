@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MusicNewsID - Portal Berita Musik</title>
-
+  <title>MusicNewsID</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -14,46 +13,48 @@
   MusicNewsID
 </header>
 
-<section class="hero">
-  <h1>Berita Musik Terbaru</h1>
-  <p>Update cepat seputar musik Indonesia & dunia</p>
-</section>
-
 <section class="container">
-  <h2>🔥 Berita Terbaru</h2>
-  <div id="posts">Loading berita...</div>
+  <h2>Berita Terbaru</h2>
+  <div id="posts">Memuat berita WordPress...</div>
 </section>
 
 <script>
-fetch("data.json")
-.then(res => res.json())
-.then(data => {
+const FEED_URL = "https://romanyosi5.wordpress.com/feed/";
 
-  let html = "";
+fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(FEED_URL))
+  .then(res => res.json())
+  .then(data => {
 
-  if (!data || data.length === 0) {
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(data.contents, "text/xml");
+    const items = xml.querySelectorAll("item");
+
+    let html = "";
+
+    items.forEach(item => {
+      const title = item.querySelector("title")?.textContent || "";
+      const link = item.querySelector("link")?.textContent || "";
+      const desc = item.querySelector("description")?.textContent || "";
+
+      // HAPUS HTML BIAR BERSIH
+      const cleanDesc = desc.replace(/<[^>]*>/g, "");
+
+      html += `
+        <article class="card">
+          <h3>${title}</h3>
+          <p>${cleanDesc.substring(0, 150)}...</p>
+          <a href="${link}" target="_blank">Baca di WordPress</a>
+        </article>
+      `;
+    });
+
+    document.getElementById("posts").innerHTML = html;
+
+  })
+  .catch(() => {
     document.getElementById("posts").innerHTML =
-      "<p>Tidak ada berita.</p>";
-    return;
-  }
-
-  data.forEach(item => {
-    html += `
-      <article class="card">
-        <h3>${item.title}</h3>
-        <p>${item.desc}</p>
-        <a href="post.html?id=${item.id}">Baca Selengkapnya →</a>
-      </article>
-    `;
+      "Gagal memuat berita WordPress.";
   });
-
-  document.getElementById("posts").innerHTML = html;
-
-})
-.catch(() => {
-  document.getElementById("posts").innerHTML =
-    "<p>Gagal memuat berita.</p>";
-});
 </script>
 
 </body>
