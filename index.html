@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>MusicNewsID - Portal Musik</title>
-
+<title>MusicNewsID</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -26,11 +24,15 @@
 </div>
 
 <script>
-const api = "https://romanyosi5.wordpress.com/wp-json/wp/v2/posts?_embed";
+
+// ✅ WORDPRESS REST API (INI RSS BARU YANG BENAR)
+const apiURL =
+"https://romanyosi5.wordpress.com/wp-json/wp/v2/posts?per_page=10&_embed";
 
 let postsData = [];
 
-fetch(api)
+// FETCH DATA
+fetch(apiURL)
 .then(res => res.json())
 .then(data => {
 
@@ -40,20 +42,24 @@ fetch(api)
 
   data.forEach((post, i) => {
 
+    // AMBIL GAMBAR FEATURED IMAGE
     let img = "";
 
-    if(post._embedded && post._embedded["wp:featuredmedia"]){
+    if(post._embedded &&
+       post._embedded["wp:featuredmedia"]){
       img = post._embedded["wp:featuredmedia"][0].source_url;
     }
 
-    let text = post.excerpt.rendered.replace(/<[^>]*>/g, "");
+    // AMBIL TEKS RINGKAS
+    let excerpt = post.excerpt.rendered
+      .replace(/<[^>]*>/g, "");
 
     html += `
       <div class="card" onclick="openPost(${i})">
         <img class="thumb" src="${img || 'https://via.placeholder.com/600x400'}">
         <div class="content">
           <h3>${post.title.rendered}</h3>
-          <div class="excerpt">${text.slice(0,120)}...</div>
+          <div class="excerpt">${excerpt.slice(0,120)}...</div>
         </div>
       </div>
     `;
@@ -61,21 +67,29 @@ fetch(api)
 
   document.getElementById("news").innerHTML = html;
 
+})
+.catch(err => {
+  document.getElementById("news").innerHTML =
+  "❌ Gagal load artikel. Cek WordPress API.";
+  console.log(err);
 });
 
+
+// 🔥 OPEN FULL ARTIKEL
 function openPost(i){
   let post = postsData[i];
 
   let img = "";
 
-  if(post._embedded && post._embedded["wp:featuredmedia"]){
+  if(post._embedded &&
+     post._embedded["wp:featuredmedia"]){
     img = post._embedded["wp:featuredmedia"][0].source_url;
   }
 
   document.getElementById("modal-body").innerHTML = `
     <h2>${post.title.rendered}</h2>
-    <p style="color:gray">${new Date(post.date).toLocaleString()}</p>
-    <img src="${img || ''}">
+    <p style="color:gray">${post.date}</p>
+    <img src="${img}">
     <div>${post.content.rendered}</div>
   `;
 
@@ -85,6 +99,7 @@ function openPost(i){
 function closeModal(){
   document.getElementById("modal").style.display = "none";
 }
+
 </script>
 
 </body>
