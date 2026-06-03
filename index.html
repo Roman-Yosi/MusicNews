@@ -3,128 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MusicNewsID - Portal Berita Musik</title>
-
+  <title>MusicNewsID</title>
   <link rel="stylesheet" href="style.css">
-  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-
-  <style>
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #aaa;
-    }
-
-    .error {
-      text-align: center;
-      color: #ff4d4d;
-      padding: 20px;
-    }
-
-    .card h3 {
-      margin: 0 0 10px;
-    }
-
-    .card p {
-      font-size: 14px;
-      color: #bbb;
-    }
-
-    .card a {
-      display: inline-block;
-      margin-top: 10px;
-      color: #ff0055;
-      text-decoration: none;
-    }
-
-    .card a:hover {
-      text-decoration: underline;
-    }
-  </style>
 </head>
-
 <body>
 
 <header>
   <div class="logo">MusicNewsID</div>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="news.html">Music</a>
-    <a href="post.html">Trending</a>
-  </nav>
 </header>
-
-<section class="hero">
-  <h1>MusicNewsID</h1>
-  <p>Berita musik otomatis & terbaru</p>
-</section>
 
 <section class="container">
   <h2>Berita Terbaru</h2>
-  <div id="posts" class="loading">Memuat berita...</div>
+  <div id="posts">Loading...</div>
 </section>
 
 <script>
-const RSS_API = "https://api.rss2json.com/v1/api.json?rss_url=";
-const FEED_URL = "https://romanyosi5.wordpress.com/feed/";
+fetch("data.json")
+.then(res => res.json())
+.then(data => {
+  let html = "";
 
-function cleanText(text) {
-  return text
-    ? text.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim()
-    : "";
-}
-
-fetch(RSS_API + encodeURIComponent(FEED_URL))
-  .then(res => res.json())
-  .then(data => {
-
-    // VALIDASI DATA
-    if (!data || !data.items || data.items.length === 0) {
-      document.getElementById("posts").innerHTML =
-        "<div class='error'>Tidak ada berita ditemukan dari WordPress.</div>";
-      return;
-    }
-
-    let html = "";
-    let count = 0;
-
-    data.items.forEach(item => {
-
-      // FILTER POST YANG TIDAK VALID
-      if (!item.title || !item.link || item.title.includes("Mulai situs")) {
-        return;
-      }
-
-      const title = item.title;
-      const link = item.link;
-      const desc = cleanText(item.description);
-
-      html += `
-        <article class="card">
-          <h3>${title}</h3>
-          <p>${desc.substring(0, 150)}...</p>
-          <a href="${link}" target="_blank" rel="noopener noreferrer">
-            Baca Selengkapnya
-          </a>
-        </article>
-      `;
-
-      count++;
-    });
-
-    if (count === 0) {
-      document.getElementById("posts").innerHTML =
-        "<div class='error'>Artikel tidak valid atau belum dipublish.</div>";
-      return;
-    }
-
-    document.getElementById("posts").innerHTML = html;
-  })
-  .catch(err => {
-    console.error(err);
-    document.getElementById("posts").innerHTML =
-      "<div class='error'>Gagal memuat RSS WordPress (cek koneksi / feed).</div>";
+  data.forEach(item => {
+    html += `
+      <article class="card">
+        <h3>${item.title}</h3>
+        <p>${item.desc}</p>
+        <a href="post.html?id=${item.id}">Baca</a>
+      </article>
+    `;
   });
+
+  document.getElementById("posts").innerHTML = html;
+});
 </script>
 
 </body>
