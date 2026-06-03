@@ -21,10 +21,12 @@ const id = params.get("id");
 fetch("./data/news.json")
   .then(res => res.json())
   .then(data => {
+
     const item = data.find(n => n.id == id);
 
     if (!item) {
-      document.getElementById("post").innerHTML = "<p>Artikel tidak ditemukan</p>";
+      document.getElementById("post").innerHTML =
+        "<div class='card'>Artikel tidak ditemukan</div>";
       return;
     }
 
