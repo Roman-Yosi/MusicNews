@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>All News</title>
+  <title>Semua Berita</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -12,7 +12,6 @@
 
 <section class="container">
   <h2>Semua Artikel</h2>
-
   <div id="news"></div>
 </section>
 
@@ -27,6 +26,10 @@ fetch("./data/news.json")
           <p>${item.desc}</p>
         </div>
       `).join("");
+  })
+  .catch(() => {
+    document.getElementById("news").innerHTML =
+      "<div class='card'>Gagal load artikel</div>";
   });
 </script>
 
