@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+  <site>MusicNewsID</site>
+  <type>news-blog</type>
+
+  <layout>
+    <header>logo + navigation</header>
+    <home>latest news feed</home>
+    <post>full article layout</post>
+  </layout>
+
+  <api>
+    <fetch>news-detail.html</fetch>
+  </api>
+</template>
