@@ -9,9 +9,7 @@
 
 <body>
 
-<header>
-  MusicNewsID
-</header>
+<header>MusicNewsID</header>
 
 <div class="container" id="news">Loading berita...</div>
 
@@ -25,57 +23,44 @@
 
 <script>
 
-// 🔥 API WORDPRESS (lebih stabil tanpa _embed)
-const apiURL =
-"https://romanyosi5.wordpress.com/wp-json/wp/v2/posts?per_page=10";
+// ================= RSS WORDPRESS =================
+const rssURL = "https://romanyosi5.wordpress.com/feed/";
 
 let postsData = [];
 
-// ================= FETCH DATA =================
-fetch(apiURL)
-.then(res => {
-  if(!res.ok){
-    throw new Error("API error");
-  }
-  return res.json();
-})
-.then(data => {
+// ================= FETCH RSS =================
+fetch(rssURL)
+.then(res => res.text())
+.then(str => {
 
-  postsData = data;
+  // PARSE XML (NO API EXTERNAL)
+  let parser = new DOMParser();
+  let xml = parser.parseFromString(str, "text/xml");
+  let items = xml.querySelectorAll("item");
 
-  let html = "";
+  let html = [];
 
-  data.forEach((post, i) => {
+  items.forEach((item, i) => {
 
-    // ✔ gambar aman (fallback jika tidak ada featured image)
-    let img = "https://via.placeholder.com/600x400";
+    let title = item.querySelector("title")?.textContent || "No Title";
+    let link = item.querySelector("link")?.textContent || "#";
+    let pubDate = item.querySelector("pubDate")?.textContent || "";
 
-    // WordPress kadang tidak kirim featured image langsung
-    if(post.featured_media_url){
-      img = post.featured_media_url;
-    }
+    let desc = item.querySelector("description")?.textContent || "";
+    desc = desc.replace(/<[^>]*>/g,"");
 
-    // fallback extract image dari content (opsional)
-    let contentHTML = post.content?.rendered || "";
-    let tempDiv = document.createElement("div");
-    tempDiv.innerHTML = contentHTML;
-    let firstImg = tempDiv.querySelector("img");
+    // ambil gambar dari description
+    let imgMatch = desc.match(/<img.*?src=["'](.*?)["']/);
+    let img = imgMatch ? imgMatch[1] : "https://via.placeholder.com/600x400";
 
-    if(firstImg){
-      img = firstImg.src;
-    }
-
-    // ✔ excerpt aman
-    let excerpt = post.excerpt?.rendered
-      ? post.excerpt.rendered.replace(/<[^>]*>/g, "")
-      : "Tidak ada ringkasan";
+    postsData.push({title, link, desc, img, pubDate});
 
     html += `
       <div class="card" onclick="openPost(${i})">
         <img class="thumb" src="${img}">
         <div class="content">
-          <h3>${post.title?.rendered || "Tanpa Judul"}</h3>
-          <div class="excerpt">${excerpt.slice(0,120)}...</div>
+          <h3>${title}</h3>
+          <div class="excerpt">${desc.slice(0,120)}...</div>
         </div>
       </div>
     `;
@@ -85,55 +70,28 @@ fetch(apiURL)
 
 })
 .catch(err => {
-
   console.log(err);
-
-  document.getElementById("news").innerHTML = `
-    <div style="padding:20px;color:red;text-align:center">
-      ❌ Gagal load artikel dari WordPress<br>
-      Coba refresh atau cek koneksi API
-    </div>
-  `;
+  document.getElementById("news").innerHTML =
+  "❌ Gagal memuat RSS";
 });
 
 
-// ================= OPEN FULL POST =================
+// ================= OPEN ARTICLE =================
 function openPost(i){
 
-  let post = postsData[i];
-
-  let content = post.content?.rendered || "Konten tidak tersedia";
-
-  // fallback gambar
-  let img = "https://via.placeholder.com/600x400";
-
-  let tempDiv = document.createElement("div");
-  tempDiv.innerHTML = content;
-
-  let firstImg = tempDiv.querySelector("img");
-
-  if(firstImg){
-    img = firstImg.src;
-  }
+  let p = postsData[i];
 
   document.getElementById("modal-body").innerHTML = `
-    <h2>${post.title?.rendered || ""}</h2>
-    <p style="color:gray">
-      ${new Date(post.date).toLocaleString()}
-    </p>
-
-    <img src="${img}" style="width:100%;border-radius:10px;margin:10px 0">
-
-    <div style="line-height:1.8">
-      ${content}
-    </div>
+    <h2>${p.title}</h2>
+    <p style="color:gray">${p.pubDate}</p>
+    <img src="${p.img}" style="width:100%;border-radius:10px;margin:10px 0">
+    <div style="line-height:1.8">${p.desc}</div>
+    <p><a href="${p.link}" target="_blank">Buka di WordPress →</a></p>
   `;
 
   document.getElementById("modal").style.display = "block";
 }
 
-
-// ================= CLOSE MODAL =================
 function closeModal(){
   document.getElementById("modal").style.display = "none";
 }
