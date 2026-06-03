@@ -3,37 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MusicNewsID</title>
+  <title>MusicNewsID - Portal Berita Musik</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <header>
-  <div class="logo">MusicNewsID</div>
+  MusicNewsID
 </header>
 
+<section class="hero">
+  <h1>Berita Musik Terbaru</h1>
+  <p>Update cepat seputar musik Indonesia & dunia</p>
+</section>
+
 <section class="container">
-  <h2>Berita Terbaru</h2>
-  <div id="posts">Loading...</div>
+  <h2>🔥 Berita Terbaru</h2>
+  <div id="posts">Loading berita...</div>
 </section>
 
 <script>
 fetch("data.json")
 .then(res => res.json())
 .then(data => {
+
   let html = "";
+
+  if (!data || data.length === 0) {
+    document.getElementById("posts").innerHTML =
+      "<p>Tidak ada berita.</p>";
+    return;
+  }
 
   data.forEach(item => {
     html += `
       <article class="card">
         <h3>${item.title}</h3>
         <p>${item.desc}</p>
-        <a href="post.html?id=${item.id}">Baca</a>
+        <a href="post.html?id=${item.id}">Baca Selengkapnya →</a>
       </article>
     `;
   });
 
   document.getElementById("posts").innerHTML = html;
+
+})
+.catch(() => {
+  document.getElementById("posts").innerHTML =
+    "<p>Gagal memuat berita.</p>";
 });
 </script>
 
