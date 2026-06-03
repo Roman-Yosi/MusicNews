@@ -15,41 +15,27 @@
 
 <section class="hero">
   <h1>Portal Berita Musik</h1>
-  <p>Update artikel terbaru</p>
+  <p>Update terbaru Roman Yosi</p>
 </section>
 
 <section class="container">
-  <h2>Artikel Terbaru</h2>
+  <h2>Berita Terbaru</h2>
 
-  <div id="news"></div>
+  <div id="home-news"></div>
 </section>
 
-<footer>
-  © 2026 MusicNewsID - Roman Yosi
-</footer>
-
 <script>
-async function loadNews(){
-  try {
-    const res = await fetch("./data/news.json");
-    const data = await res.json();
-
-    const container = document.getElementById("news");
-
-    container.innerHTML = data.map(item => `
-      <article class="card">
-        <h3><a href="${item.link}" target="_blank">${item.title}</a></h3>
-        <p>${item.desc}</p>
-      </article>
-    `).join("");
-
-  } catch (e) {
-    document.getElementById("news").innerHTML =
-      "<p>Artikel tidak bisa dimuat. Cek file news.json</p>";
-  }
-}
-
-loadNews();
+fetch("./data/news.json")
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("home-news").innerHTML =
+      data.slice(0,3).map(item => `
+        <div class="card">
+          <h3><a href="post.html?id=${item.id}">${item.title}</a></h3>
+          <p>${item.desc}</p>
+        </div>
+      `).join("");
+  });
 </script>
 
 </body>
