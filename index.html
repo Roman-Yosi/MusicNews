@@ -1,101 +1,73 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MusicNewsID</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MusicNewsID</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>MusicNewsID</header>
+<header>
+  <div class="logo">MusicNews</div>
 
-<div class="container" id="news">Loading berita...</div>
+  <nav>
+    <a href="#">HOME</a>
+    <a href="#">MUSIC</a>
+    <a href="#">TRENDING</a>
+  </nav>
+</header>
 
-<!-- MODAL -->
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">✖</span>
-    <div id="modal-body"></div>
-  </div>
-</div>
+<section class="container">
+
+  <h1>Berita Terbaru</h1>
+
+  <div id="news">Memuat artikel...</div>
+
+</section>
 
 <script>
+async function loadBlog() {
+  try {
 
-// ================= RSS WORDPRESS =================
-const rssURL = "https://romanyosi5.wordpress.com/feed/";
+    const rss = "https://musicnewsid.blogspot.com/feeds/posts/default?alt=rss";
+    const api = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(rss);
 
-let postsData = [];
+    const res = await fetch(api);
+    const data = await res.json();
 
-// ================= FETCH RSS =================
-fetch(rssURL)
-.then(res => res.text())
-.then(str => {
+    let html = "";
 
-  // PARSE XML (NO API EXTERNAL)
-  let parser = new DOMParser();
-  let xml = parser.parseFromString(str, "text/xml");
-  let items = xml.querySelectorAll("item");
+    if (!data.items || data.items.length === 0) {
+      document.getElementById("news").innerHTML = "Belum ada artikel.";
+      return;
+    }
 
-  let html = [];
+    data.items.forEach(post => {
 
-  items.forEach((item, i) => {
+      let title = post.title;
+      let desc = post.description.replace(/<[^>]*>/g,'');
+      let link = post.link;
 
-    let title = item.querySelector("title")?.textContent || "No Title";
-    let link = item.querySelector("link")?.textContent || "#";
-    let pubDate = item.querySelector("pubDate")?.textContent || "";
-
-    let desc = item.querySelector("description")?.textContent || "";
-    desc = desc.replace(/<[^>]*>/g,"");
-
-    // ambil gambar dari description
-    let imgMatch = desc.match(/<img.*?src=["'](.*?)["']/);
-    let img = imgMatch ? imgMatch[1] : "https://via.placeholder.com/600x400";
-
-    postsData.push({title, link, desc, img, pubDate});
-
-    html += `
-      <div class="card" onclick="openPost(${i})">
-        <img class="thumb" src="${img}">
-        <div class="content">
-          <h3>${title}</h3>
-          <div class="excerpt">${desc.slice(0,120)}...</div>
+      html += `
+        <div class="card">
+          <h2>${title}</h2>
+          <p>${desc.substring(0, 180)}...</p>
+          <a href="${link}" target="_blank">Baca Selengkapnya</a>
         </div>
-      </div>
-    `;
-  });
+      `;
+    });
 
-  document.getElementById("news").innerHTML = html;
+    document.getElementById("news").innerHTML = html;
 
-})
-.catch(err => {
-  console.log(err);
-  document.getElementById("news").innerHTML =
-  "❌ Gagal memuat RSS";
-});
-
-
-// ================= OPEN ARTICLE =================
-function openPost(i){
-
-  let p = postsData[i];
-
-  document.getElementById("modal-body").innerHTML = `
-    <h2>${p.title}</h2>
-    <p style="color:gray">${p.pubDate}</p>
-    <img src="${p.img}" style="width:100%;border-radius:10px;margin:10px 0">
-    <div style="line-height:1.8">${p.desc}</div>
-    <p><a href="${p.link}" target="_blank">Buka di WordPress →</a></p>
-  `;
-
-  document.getElementById("modal").style.display = "block";
+  } catch (err) {
+    console.log(err);
+    document.getElementById("news").innerHTML = "Gagal memuat artikel.";
+  }
 }
 
-function closeModal(){
-  document.getElementById("modal").style.display = "none";
-}
-
+loadBlog();
 </script>
 
 </body>
