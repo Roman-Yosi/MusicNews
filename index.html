@@ -19,31 +19,29 @@
 </section>
 
 <section class="container">
+
   <h2>Berita Terbaru</h2>
-  <div id="home-news"></div>
+
+  <div class="card">
+    <h3>Roman Yosi Rilis Lagu Baru</h3>
+    <p>Single terbaru sudah resmi dirilis di semua platform musik digital.</p>
+  </div>
+
+  <div class="card">
+    <h3>Tren Musik Indonesia 2026</h3>
+    <p>Industri musik digital semakin berkembang pesat di Indonesia.</p>
+  </div>
+
+  <div class="card">
+    <h3>Behind The Scene Studio</h3>
+    <p>Proses produksi musik dilakukan dengan standar profesional.</p>
+  </div>
+
 </section>
 
-<script>
-async function loadHome(){
-  try {
-    const res = await fetch("./data/news.json");
-    const data = await res.json();
-
-    document.getElementById("home-news").innerHTML =
-      data.slice(0, 3).map(item => `
-        <div class="card">
-          <h3><a href="post.html?id=${item.id}">${item.title}</a></h3>
-          <p>${item.desc}</p>
-        </div>
-      `).join("");
-  } catch (e) {
-    document.getElementById("home-news").innerHTML =
-      "<div class='card'><h3>Data tidak ditemukan</h3></div>";
-  }
-}
-
-loadHome();
-</script>
+<footer>
+  © 2026 MusicNewsID
+</footer>
 
 </body>
 </html>
