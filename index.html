@@ -10,53 +10,46 @@
 <body>
 
 <header>
-  <div class="logo">MusicNewsID</div>
+  MusicNewsID
 </header>
+
+<section class="hero">
+  <h1>Portal Berita Musik</h1>
+  <p>Update artikel terbaru</p>
+</section>
 
 <section class="container">
   <h2>Artikel Terbaru</h2>
-  <div id="rss"></div>
+
+  <div id="news"></div>
 </section>
 
+<footer>
+  © 2026 MusicNewsID - Roman Yosi
+</footer>
+
 <script>
-async function loadRSS() {
-  const rss = "https://romanyosi5.wordpress.com/feed/";
-
-  const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(rss);
-
+async function loadNews(){
   try {
-    const res = await fetch(proxy);
-    const text = await res.text();
+    const res = await fetch("./data/news.json");
+    const data = await res.json();
 
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(text, "text/xml");
+    const container = document.getElementById("news");
 
-    const items = xml.querySelectorAll("item");
+    container.innerHTML = data.map(item => `
+      <article class="card">
+        <h3><a href="${item.link}" target="_blank">${item.title}</a></h3>
+        <p>${item.desc}</p>
+      </article>
+    `).join("");
 
-    let html = "";
-
-    items.forEach(item => {
-      const title = item.querySelector("title").textContent;
-      const link = item.querySelector("link").textContent;
-      const desc = item.querySelector("description").textContent;
-
-      html += `
-        <div class="card">
-          <h3><a href="${link}" target="_blank">${title}</a></h3>
-          <p>${desc.replace(/<[^>]*>/g,'').substring(0,120)}...</p>
-        </div>
-      `;
-    });
-
-    document.getElementById("rss").innerHTML = html;
-
-  } catch (err) {
-    document.getElementById("rss").innerHTML =
-      "<p>Gagal memuat RSS. Cek koneksi atau feed.</p>";
+  } catch (e) {
+    document.getElementById("news").innerHTML =
+      "<p>Artikel tidak bisa dimuat. Cek file news.json</p>";
   }
 }
 
-loadRSS();
+loadNews();
 </script>
 
 </body>
