@@ -3,45 +3,166 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MusicNewsID</title>
-  <link rel="stylesheet" href="style.css">
+  <title>MusicNewsID - Portal Berita Musik</title>
+
+  <style>
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background:#0f0f0f;
+      color:#fff;
+    }
+
+    header{
+      background:#000;
+      padding:20px;
+      text-align:center;
+      font-size:26px;
+      font-weight:bold;
+      letter-spacing:1px;
+    }
+
+    .container{
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      gap:15px;
+      padding:20px;
+    }
+
+    .card{
+      background:#1c1c1c;
+      border-radius:12px;
+      overflow:hidden;
+      cursor:pointer;
+      transition:0.2s;
+    }
+
+    .card:hover{
+      transform:scale(1.02);
+    }
+
+    .thumb{
+      width:100%;
+      height:180px;
+      object-fit:cover;
+      background:#333;
+    }
+
+    .content{
+      padding:12px;
+    }
+
+    .content h3{
+      font-size:16px;
+      margin:0 0 8px;
+      color:#00d9ff;
+    }
+
+    .excerpt{
+      font-size:13px;
+      color:#ccc;
+    }
+
+    /* MODAL DETAIL */
+    .modal{
+      position:fixed;
+      top:0;left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.9);
+      display:none;
+      overflow:auto;
+      z-index:999;
+    }
+
+    .modal-content{
+      max-width:800px;
+      margin:40px auto;
+      background:#111;
+      padding:20px;
+      border-radius:10px;
+    }
+
+    .modal img{
+      width:100%;
+      border-radius:10px;
+      margin-bottom:15px;
+    }
+
+    .close{
+      float:right;
+      cursor:pointer;
+      color:red;
+      font-size:18px;
+    }
+
+    a{color:#00d9ff}
+  </style>
 </head>
 
 <body>
 
-<header>
-  MusicNewsID
-</header>
+<header>MusicNewsID</header>
 
-<section class="hero">
-  <h1>Portal Berita Musik</h1>
-  <p>Update terbaru Roman Yosi</p>
-</section>
+<div class="container" id="news"></div>
 
-<section class="container">
-
-  <h2>Berita Terbaru</h2>
-
-  <div class="card">
-    <h3>Roman Yosi Rilis Lagu Baru</h3>
-    <p>Single terbaru sudah resmi dirilis di semua platform musik digital.</p>
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">❌ Tutup</span>
+    <div id="modal-body"></div>
   </div>
+</div>
 
-  <div class="card">
-    <h3>Tren Musik Indonesia 2026</h3>
-    <p>Industri musik digital semakin berkembang pesat di Indonesia.</p>
-  </div>
+<script>
+const rss = "https://romanyosi5.wordpress.com/feed/";
 
-  <div class="card">
-    <h3>Behind The Scene Studio</h3>
-    <p>Proses produksi musik dilakukan dengan standar profesional.</p>
-  </div>
+fetch("https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(rss))
+.then(res => res.json())
+.then(data => {
 
-</section>
+  let html = "";
 
-<footer>
-  © 2026 MusicNewsID
-</footer>
+  data.items.forEach((item, index) => {
+
+    let img = item.thumbnail || (item.enclosure ? item.enclosure.link : "");
+
+    html += `
+      <div class="card" onclick="openPost(${index})">
+        <img class="thumb" src="${img || 'https://via.placeholder.com/600x400'}">
+        <div class="content">
+          <h3>${item.title}</h3>
+          <div class="excerpt">${item.description.slice(0,120)}...</div>
+        </div>
+      </div>
+    `;
+  });
+
+  document.getElementById("news").innerHTML = html;
+
+  window.posts = data.items;
+
+});
+
+function openPost(i){
+  let p = window.posts[i];
+
+  let img = p.thumbnail || (p.enclosure ? p.enclosure.link : "");
+
+  document.getElementById("modal-body").innerHTML = `
+    <h2>${p.title}</h2>
+    <p style="color:gray">${p.pubDate}</p>
+    <img src="${img}">
+    <div>${p.content}</div>
+  `;
+
+  document.getElementById("modal").style.display = "block";
+}
+
+function closeModal(){
+  document.getElementById("modal").style.display = "none";
+}
+</script>
 
 </body>
 </html>
