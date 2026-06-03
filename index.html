@@ -15,45 +15,44 @@
 
 <section class="container">
   <h2>Berita Terbaru</h2>
-  <div id="posts">Memuat berita WordPress...</div>
+  <div id="posts">Loading...</div>
 </section>
 
 <script>
-const FEED_URL = "https://romanyosi5.wordpress.com/feed/";
+const url = "https://romanyosi5.wordpress.com/feed/";
 
-fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(FEED_URL))
+fetch("https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(url))
   .then(res => res.json())
   .then(data => {
 
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(data.contents, "text/xml");
-    const items = xml.querySelectorAll("item");
+    if (!data.items || data.items.length === 0) {
+      document.getElementById("posts").innerHTML =
+        "Tidak ada berita dari WordPress.";
+      return;
+    }
 
     let html = "";
 
-    items.forEach(item => {
-      const title = item.querySelector("title")?.textContent || "";
-      const link = item.querySelector("link")?.textContent || "";
-      const desc = item.querySelector("description")?.textContent || "";
-
-      // HAPUS HTML BIAR BERSIH
-      const cleanDesc = desc.replace(/<[^>]*>/g, "");
+    data.items.forEach(item => {
+      const title = item.title || "";
+      const link = item.link || "";
+      const desc = (item.description || "").replace(/<[^>]*>/g, "");
 
       html += `
         <article class="card">
           <h3>${title}</h3>
-          <p>${cleanDesc.substring(0, 150)}...</p>
+          <p>${desc.substring(0,150)}...</p>
           <a href="${link}" target="_blank">Baca di WordPress</a>
         </article>
       `;
     });
 
     document.getElementById("posts").innerHTML = html;
-
   })
-  .catch(() => {
+  .catch(err => {
+    console.log(err);
     document.getElementById("posts").innerHTML =
-      "Gagal memuat berita WordPress.";
+      "Gagal memuat berita (RSS error / diblok GitHub).";
   });
 </script>
 
