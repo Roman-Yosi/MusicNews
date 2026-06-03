@@ -20,22 +20,29 @@
 
 <section class="container">
   <h2>Berita Terbaru</h2>
-
   <div id="home-news"></div>
 </section>
 
 <script>
-fetch("./data/news.json")
-  .then(res => res.json())
-  .then(data => {
+async function loadHome(){
+  try {
+    const res = await fetch("./data/news.json");
+    const data = await res.json();
+
     document.getElementById("home-news").innerHTML =
-      data.slice(0,3).map(item => `
+      data.slice(0, 3).map(item => `
         <div class="card">
           <h3><a href="post.html?id=${item.id}">${item.title}</a></h3>
           <p>${item.desc}</p>
         </div>
       `).join("");
-  });
+  } catch (e) {
+    document.getElementById("home-news").innerHTML =
+      "<div class='card'><h3>Data tidak ditemukan</h3></div>";
+  }
+}
+
+loadHome();
 </script>
 
 </body>
