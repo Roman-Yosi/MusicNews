@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MusicNewsID - Portal Musik</title>
+  <title>MusicNewsID</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -11,53 +11,48 @@
 
 <header>
   <div class="logo">MusicNewsID</div>
-  <nav>
-    <a href="#">HOME</a>
-    <a href="#">MUSIC</a>
-    <a href="#">TRENDING</a>
-  </nav>
 </header>
-
-<section class="hero">
-  <h1>Berita Musik Terbaru</h1>
-  <p>Update otomatis dari WordPress</p>
-</section>
 
 <section class="container">
   <h2>Artikel Terbaru</h2>
-
-  <div id="rss-container" class="grid"></div>
+  <div id="rss"></div>
 </section>
-
-<footer>
-  <p>© 2026 MusicNewsID - Roman Yosi</p>
-</footer>
 
 <script>
 async function loadRSS() {
-  const rssUrl = "https://romanyosi5.wordpress.com/feed/";
+  const rss = "https://romanyosi5.wordpress.com/feed/";
+
+  const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(rss);
 
   try {
-    const res = await fetch("https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(rssUrl));
-    const data = await res.json();
+    const res = await fetch(proxy);
+    const text = await res.text();
+
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(text, "text/xml");
+
+    const items = xml.querySelectorAll("item");
 
     let html = "";
 
-    data.items.forEach(item => {
+    items.forEach(item => {
+      const title = item.querySelector("title").textContent;
+      const link = item.querySelector("link").textContent;
+      const desc = item.querySelector("description").textContent;
+
       html += `
-        <article class="card">
-          <h3><a href="${item.link}" target="_blank">${item.title}</a></h3>
-          <small>${new Date(item.pubDate).toLocaleDateString()}</small>
-          <p>${item.description.replace(/<[^>]*>/g, '').substring(0, 120)}...</p>
-        </article>
+        <div class="card">
+          <h3><a href="${link}" target="_blank">${title}</a></h3>
+          <p>${desc.replace(/<[^>]*>/g,'').substring(0,120)}...</p>
+        </div>
       `;
     });
 
-    document.getElementById("rss-container").innerHTML = html;
+    document.getElementById("rss").innerHTML = html;
 
-  } catch (e) {
-    document.getElementById("rss-container").innerHTML =
-      "<p>Gagal memuat artikel RSS</p>";
+  } catch (err) {
+    document.getElementById("rss").innerHTML =
+      "<p>Gagal memuat RSS. Cek koneksi atau feed.</p>";
   }
 }
 
