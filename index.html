@@ -17,6 +17,7 @@ background:#111;
 color:white;
 padding:20px;
 text-align:center;
+font-size:28px;
 }
 
 nav{
@@ -65,14 +66,16 @@ padding:10px 15px;
 text-decoration:none;
 border-radius:5px;
 }
+.loading{
+text-align:center;
+padding:40px;
+}
 </style>
 </head>
 
 <body>
 
-<header>
-<h1>MusicNewsID</h1>
-</header>
+<header>MusicNewsID</header>
 
 <nav>
 <a href="#">HOME</a>
@@ -81,41 +84,40 @@ border-radius:5px;
 </nav>
 
 <div class="container">
-<div id="news"></div>
+<div id="news"><div class="loading">Memuat artikel...</div></div>
 </div>
 
 <script>
+const container = document.getElementById("news");
 
-// 🔥 DATA SEMENTARA (AMAN + STABIL)
-const data = [
-{
-title: "Roman Yosi - Perjalanan Musik",
-desc: "Musisi independen Indonesia yang berkarya di dunia musik.",
-img: "https://raw.githubusercontent.com/Roman-Yosi/Poto-roman-yosi/main/Screenshot_20260525_145712_Google-3000x3000.jpg"
-},
-{
-title: "Roman Yosi - Karya Terbaru",
-desc: "Rilis musik terbaru dengan gaya indie pop.",
-img: "https://raw.githubusercontent.com/Roman-Yosi/Poto-roman-yosi/main/Screenshot_20260525_145712_Google-3000x3000.jpg"
-}
-];
+// 🔥 AMBIL ARTIKEL ASLI WORDPRESS
+fetch("https://romanyosi5.wordpress.com/wp-json/wp/v2/posts?_embed")
+.then(res => res.json())
+.then(posts => {
 
 let html = "";
 
-data.forEach((item, index) => {
+posts.forEach(post => {
+
+let img =
+post._embedded?.['wp:featuredmedia']?.[0]?.source_url ||
+"https://via.placeholder.com/800x450";
+
+let title = post.title.rendered;
+let desc = post.excerpt.rendered.replace(/<[^>]*>/g,'').substring(0,160);
 
 html += `
 <div class="card">
 
-<img src="${item.img}">
+<img src="${img}" alt="${title}">
 
 <div class="content">
 
-<h2>${item.title}</h2>
+<h2>${title}</h2>
 
-<p>${item.desc}</p>
+<p>${desc}...</p>
 
-<a class="button" href="post.html?id=${index}">
+<a class="button" href="${post.link}" target="_blank">
 Baca Selengkapnya
 </a>
 
@@ -125,8 +127,13 @@ Baca Selengkapnya
 `;
 });
 
-document.getElementById("news").innerHTML = html;
+container.innerHTML = html;
 
+})
+.catch(err => {
+console.log(err);
+container.innerHTML = "<div class='loading'>Gagal memuat artikel</div>";
+});
 </script>
 
 </body>
