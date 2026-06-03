@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MusicNewsID - Berita Musik Terbaru</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Biar aman akses RSS -->
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 </head>
+
 <body>
 
 <header>
@@ -19,23 +23,48 @@
 
 <section class="hero">
   <h1>MusicNewsID</h1>
-  <p>Portal berita musik terbaru Indonesia</p>
+  <p>Berita musik otomatis dari WordPress</p>
 </section>
 
 <section class="container">
   <h2>Berita Terbaru</h2>
-  <div id="posts">Memuat artikel...</div>
+  <div id="posts">Memuat berita...</div>
 </section>
 
 <script>
-fetch("news-detail.html")
-.then(res => res.text())
-.then(data => {
-  document.getElementById("posts").innerHTML = data;
-})
-.catch(() => {
-  document.getElementById("posts").innerHTML = "Gagal memuat artikel.";
-});
+const RSS_URL = "https://romanyosi5.wordpress.com/feed/";
+
+fetch(RSS_URL)
+  .then(response => response.text())
+  .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+  .then(data => {
+    const items = data.querySelectorAll("item");
+    let html = "";
+
+    items.forEach(el => {
+      const title = el.querySelector("title")?.textContent || "No Title";
+      const link = el.querySelector("link")?.textContent || "#";
+      const desc = el.querySelector("description")?.textContent || "";
+
+      // bersihkan HTML dari WordPress
+      const cleanDesc = desc.replace(/<[^>]*>/g, "");
+
+      html += `
+        <article class="card">
+          <h3>${title}</h3>
+          <p>${cleanDesc.substring(0, 140)}...</p>
+          <a href="${link}" target="_blank">Baca di WordPress</a>
+        </article>
+      `;
+    });
+
+    document.getElementById("posts").innerHTML = html;
+  })
+  .catch(err => {
+    document.getElementById("posts").innerHTML =
+      "Gagal memuat berita dari WordPress RSS.";
+    console.error(err);
+  });
 </script>
 
 </body>
