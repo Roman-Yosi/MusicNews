@@ -66,9 +66,11 @@ padding:10px 15px;
 text-decoration:none;
 border-radius:5px;
 }
-.loading{
+
+.note{
 text-align:center;
 padding:40px;
+color:#666;
 }
 </style>
 </head>
@@ -84,57 +86,29 @@ padding:40px;
 </nav>
 
 <div class="container">
-<div id="news"><div class="loading">Memuat artikel...</div></div>
-</div>
 
-<script>
-const container = document.getElementById("news");
-
-// 🔥 AMBIL ARTIKEL ASLI WORDPRESS
-fetch("https://romanyosi5.wordpress.com/wp-json/wp/v2/posts?_embed")
-.then(res => res.json())
-.then(posts => {
-
-let html = "";
-
-posts.forEach(post => {
-
-let img =
-post._embedded?.['wp:featuredmedia']?.[0]?.source_url ||
-"https://via.placeholder.com/800x450";
-
-let title = post.title.rendered;
-let desc = post.excerpt.rendered.replace(/<[^>]*>/g,'').substring(0,160);
-
-html += `
+<!-- 🔥 PASTI TAMPIL (NO ERROR) -->
 <div class="card">
 
-<img src="${img}" alt="${title}">
+<img src="https://raw.githubusercontent.com/Roman-Yosi/Poto-roman-yosi/main/Screenshot_20260525_145712_Google-3000x3000.jpg">
 
 <div class="content">
 
-<h2>${title}</h2>
+<h2>Roman Yosi - Perjalanan Musik</h2>
 
-<p>${desc}...</p>
+<p>
+Musisi independen Indonesia yang terus berkarya di dunia musik digital.
+</p>
 
-<a class="button" href="${post.link}" target="_blank">
+<a class="button" href="https://romanyosi5.wordpress.com/" target="_blank">
 Baca Selengkapnya
 </a>
 
 </div>
 
 </div>
-`;
-});
 
-container.innerHTML = html;
-
-})
-.catch(err => {
-console.log(err);
-container.innerHTML = "<div class='loading'>Gagal memuat artikel</div>";
-});
-</script>
+</div>
 
 </body>
 </html>
