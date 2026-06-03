@@ -6,8 +6,41 @@
   <title>MusicNewsID - Berita Musik Terbaru</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- Biar aman akses RSS -->
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+  <style>
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #aaa;
+    }
+
+    .error {
+      text-align: center;
+      color: #ff4d4d;
+      padding: 20px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px 0;
+    }
+
+    .card p {
+      color: #bbb;
+      font-size: 14px;
+    }
+
+    .card a {
+      display: inline-block;
+      margin-top: 10px;
+      color: #ff0055;
+      text-decoration: none;
+    }
+
+    .card a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 
 <body>
@@ -23,37 +56,43 @@
 
 <section class="hero">
   <h1>MusicNewsID</h1>
-  <p>Berita musik otomatis dari WordPress</p>
+  <p>Portal berita musik otomatis dari WordPress</p>
 </section>
 
 <section class="container">
   <h2>Berita Terbaru</h2>
-  <div id="posts">Memuat berita...</div>
+  <div id="posts" class="loading">Memuat berita...</div>
 </section>
 
 <script>
-const RSS_URL = "https://romanyosi5.wordpress.com/feed/";
+const RSS_PROXY = "https://api.rss2json.com/v1/api.json?rss_url=";
+const FEED = "https://romanyosi5.wordpress.com/feed/";
 
-fetch(RSS_URL)
-  .then(response => response.text())
-  .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+function cleanText(text) {
+  return text.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+}
+
+fetch(RSS_PROXY + encodeURIComponent(FEED))
+  .then(res => res.json())
   .then(data => {
-    const items = data.querySelectorAll("item");
+    if (!data.items || data.items.length === 0) {
+      document.getElementById("posts").innerHTML =
+        "<div class='error'>Tidak ada berita ditemukan.</div>";
+      return;
+    }
+
     let html = "";
 
-    items.forEach(el => {
-      const title = el.querySelector("title")?.textContent || "No Title";
-      const link = el.querySelector("link")?.textContent || "#";
-      const desc = el.querySelector("description")?.textContent || "";
-
-      // bersihkan HTML dari WordPress
-      const cleanDesc = desc.replace(/<[^>]*>/g, "");
+    data.items.forEach(item => {
+      const title = item.title || "No Title";
+      const link = item.link || "#";
+      const desc = cleanText(item.description || "");
 
       html += `
         <article class="card">
           <h3>${title}</h3>
-          <p>${cleanDesc.substring(0, 140)}...</p>
-          <a href="${link}" target="_blank">Baca di WordPress</a>
+          <p>${desc.substring(0, 160)}...</p>
+          <a href="${link}" target="_blank">Baca Selengkapnya</a>
         </article>
       `;
     });
@@ -62,7 +101,7 @@ fetch(RSS_URL)
   })
   .catch(err => {
     document.getElementById("posts").innerHTML =
-      "Gagal memuat berita dari WordPress RSS.";
+      "<div class='error'>Gagal memuat berita dari WordPress RSS.</div>";
     console.error(err);
   });
 </script>
