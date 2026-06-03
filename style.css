@@ -1,62 +1,41 @@
-/* ===== RESET ===== */
+/* RESET */
 *{
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family: Arial, sans-serif;
+  font-family:Arial;
 }
 
 body{
-  background:#0f0f0f;
+  background:#0d0d0d;
   color:#fff;
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 header{
   background:#000;
-  padding:18px 10px;
+  padding:18px;
   text-align:center;
   font-size:28px;
-  font-weight:800;
-  letter-spacing:1px;
-  color:#fff;
+  font-weight:bold;
   border-bottom:2px solid #111;
 }
 
-/* NAV (optional menu) */
-nav{
-  background:#111;
-  display:flex;
-  justify-content:center;
-  gap:20px;
-  padding:10px;
-}
-
-nav a{
-  color:#ccc;
-  text-decoration:none;
-  font-size:14px;
-}
-
-nav a:hover{
-  color:#00d9ff;
-}
-
-/* ===== CONTAINER GRID ===== */
+/* GRID */
 .container{
   display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap:16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+  gap:15px;
   padding:20px;
 }
 
-/* ===== CARD BERITA ===== */
+/* CARD */
 .card{
   background:#1a1a1a;
   border-radius:14px;
   overflow:hidden;
   cursor:pointer;
-  transition:0.25s;
+  transition:0.3s;
   border:1px solid #222;
 }
 
@@ -65,15 +44,12 @@ nav a:hover{
   border-color:#00d9ff;
 }
 
-/* GAMBAR */
 .thumb{
   width:100%;
   height:180px;
   object-fit:cover;
-  background:#333;
 }
 
-/* CONTENT */
 .content{
   padding:12px;
 }
@@ -82,23 +58,14 @@ nav a:hover{
   font-size:15px;
   color:#00d9ff;
   margin-bottom:8px;
-  line-height:1.4;
 }
 
 .excerpt{
   font-size:13px;
   color:#bbb;
-  line-height:1.4;
 }
 
-/* ===== DATE ===== */
-.date{
-  font-size:11px;
-  color:#777;
-  margin-top:8px;
-}
-
-/* ===== MODAL ===== */
+/* MODAL */
 .modal{
   position:fixed;
   top:0;
@@ -111,55 +78,29 @@ nav a:hover{
   z-index:9999;
 }
 
-/* MODAL BOX */
 .modal-content{
   max-width:850px;
   margin:40px auto;
   background:#111;
   padding:20px;
   border-radius:12px;
-  border:1px solid #222;
 }
 
-/* MODAL IMAGE */
 .modal-content img{
   width:100%;
   border-radius:10px;
   margin:15px 0;
 }
 
-/* CLOSE BUTTON */
+.modal-content div{
+  line-height:1.8;
+  color:#ddd;
+  font-size:15px;
+}
+
 .close{
   float:right;
   cursor:pointer;
-  color:#ff4444;
-  font-size:14px;
+  color:red;
   font-weight:bold;
-}
-
-/* FULL ARTICLE CONTENT */
-.modal-content div{
-  font-size:15px;
-  line-height:1.7;
-  color:#ddd;
-}
-
-/* LINK */
-a{
-  color:#00d9ff;
-}
-
-/* RESPONSIVE */
-@media(max-width:600px){
-  header{
-    font-size:20px;
-  }
-
-  .thumb{
-    height:160px;
-  }
-
-  .modal-content{
-    margin:20px;
-  }
 }
