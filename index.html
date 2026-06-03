@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -43,6 +42,7 @@ background:#fff;
 border-radius:10px;
 overflow:hidden;
 box-shadow:0 2px 8px rgba(0,0,0,.1);
+margin-bottom:20px;
 }
 
 .card img{
@@ -62,6 +62,11 @@ padding:10px 15px;
 text-decoration:none;
 border-radius:5px;
 }
+
+.loading{
+text-align:center;
+padding:40px;
+}
 </style>
 </head>
 
@@ -78,31 +83,65 @@ border-radius:5px;
 </nav>
 
 <div class="container">
+<div id="news"> 
+<div class="loading">Memuat artikel...</div>
+</div>
+</div>
 
+<script>
+const container = document.getElementById("news");
+
+fetch("https://romanyosi5.wordpress.com/wp-json/wp/v2/posts")
+.then(res => res.json())
+.then(data => {
+
+let html = "";
+
+data.forEach(post => {
+
+let img = "https://raw.githubusercontent.com/Roman-Yosi/Poto-roman-yosi/main/Screenshot_20260525_145712_Google-3000x3000.jpg";
+
+if(post.jetpack_featured_media_url){
+img = post.jetpack_featured_media_url;
+}
+
+let text = post.excerpt.rendered
+.replace(/<[^>]*>/g,'')
+.substring(0,150);
+
+html += `
 <div class="card">
 
-<img src="https://raw.githubusercontent.com/Roman-Yosi/Poto-roman-yosi/main/Screenshot_20260525_145712_Google-3000x3000.jpg" alt="Roman Yosi">
+<img src="${img}" alt="${post.title.rendered}">
 
 <div class="content">
 
-<h2>Roman Yosi: Perjalanan Hidup dari Rangkasbitung Menuju Dunia Musik Indonesia</h2>
+<h2>${post.title.rendered}</h2>
 
-<p>
-Roman Yosi adalah musisi independen dan kreator konten asal Banten yang aktif berkarya melalui berbagai platform digital.
-</p>
+<p>${text}...</p>
 
 <a class="button"
-href="https://romanyosi5.wordpress.com/"
-target="_blank">
+href="${post.link}"
+target="_blank"
+rel="noopener noreferrer">
 Baca Selengkapnya
 </a>
 
 </div>
 
 </div>
+`;
 
-</div>
+});
+
+container.innerHTML = html;
+
+})
+.catch(err => {
+container.innerHTML = "<div class='loading'>Gagal memuat artikel</div>";
+console.log(err);
+});
+</script>
 
 </body>
 </html>
-```
